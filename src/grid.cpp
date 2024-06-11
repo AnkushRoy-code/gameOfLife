@@ -132,5 +132,7 @@ void Grid::initializeCells() {
   if (inputFile.good()) {
     // File exists, load cells from the file
     cells = loadCellsFromFile("data/vec.txt");
+  } else {
+    cells = std::vector<std::vector<int>>(rows, std::vector<int>(columns, 0));
   }
 }
