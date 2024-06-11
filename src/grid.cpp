@@ -2,6 +2,11 @@
 
 #include <SDL2/SDL.h>
 #include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 struct Color {
   Uint8 r;
@@ -68,5 +73,64 @@ void Grid::Clear() {
 void Grid::ToggleCell(int row, int column) {
   if (row >= 0 && row < rows && column >= 0 && column < columns) {
     cells[row][column] = !cells[row][column];
+  }
+}
+
+void Grid::saveCellsToFile(const std::vector<std::vector<int>> &cells,
+                           const std::string &filename) {
+  std::ofstream outputFile(filename);
+
+  if (!outputFile.is_open()) {
+    std::cerr << "Failed to open file for writing." << std::endl;
+    return;
+  }
+
+  for (const auto &row : cells) {
+    for (size_t i = 0; i < row.size(); ++i) {
+      outputFile << row[i];
+      if (i != row.size() - 1) { // Don't add a space after the last element
+        outputFile << " ";       // Space separates integers within a row
+      }
+    }
+    outputFile << "\n"; // Newline separates rows
+  }
+
+  outputFile.close();
+}
+
+std::vector<std::vector<int>>
+Grid::loadCellsFromFile(const std::string &filename) {
+  std::vector<std::vector<int>> cells;
+  std::ifstream inputFile(filename);
+
+  if (!inputFile.is_open()) {
+    std::cerr << "Failed to open file for reading." << std::endl;
+    return cells; // Return an empty vector if file cannot be opened
+  }
+
+  std::string line;
+  while (std::getline(inputFile, line)) {
+    std::istringstream iss(line);
+    std::vector<int> row;
+    int num;
+
+    while (iss >> num) {
+      row.push_back(num);
+      if (iss.peek() == ' ')
+        iss.ignore(); // Ignore spaces between numbers
+    }
+
+    cells.push_back(row);
+  }
+
+  inputFile.close();
+  return cells;
+}
+
+void Grid::initializeCells() {
+  std::ifstream inputFile("data/vec.txt");
+  if (inputFile.good()) {
+    // File exists, load cells from the file
+    cells = loadCellsFromFile("data/vec.txt");
   }
 }

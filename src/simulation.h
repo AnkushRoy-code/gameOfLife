@@ -7,9 +7,7 @@ class Simulation {
 public:
   Simulation(int width, int height, int cellSize)
       : grid(width, height, cellSize), tempGrid(width, height, cellSize),
-        run{false} {
-    grid.Clear();
-  };
+        run{false} {};
   void Draw(SDL_Renderer *renderer, int offsetX, int offsetY);
   void SetCellValue(int row, int column, int value);
 
@@ -23,6 +21,8 @@ public:
   void ClearGrid();
   void CreateRandomState();
   void ToggleCell(int row, int column);
+
+  void saveCells(const std::string &filename);
 
 private:
   Grid grid;

@@ -1,65 +1,73 @@
 #include <SDL2/SDL.h>
-#include <SDL_mouse.h>
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
+#include <string>
 
 #include "simulation.h"
 
 const int DESIRED_FPS = 12;
 const int FRAME_PERIOD = 1000 / DESIRED_FPS;
 
+bool checkLineContent(const std::string &filename, int lineNumber,
+                      const std::string &targetString);
+
 int main() {
-  int i = 0;
+  if (!checkLineContent("data/NotFirstTime.txt", 2, "true")) {
+    int i = 0;
 
-  std::cout << "\033[2J\033[1;1H";
-  std::cout << "-----[GameOfLife]\n";
-  std::cout // please excuse my formatter
-      << "\n  This is a simulation of Conway's Game Of Life implemented by "
-         "Ankush "
-         "Roy.... by following a tutorial from youtube.\n  But! the youtuber "
-         "made it using python and pygame, and I made it using C++ and "
-         "SDL2! and moreover I also added some different features to the "
-         "game!\n\n\n";
-
-  std::cout
-      << "  Press [1] and [ENTER] to Continue\n  Or Press [0] and [ENTER] "
-         "to quit(safely)\n  > ";
-  std::cin >> i;
-
-  if (i == 0) {
     std::cout << "\033[2J\033[1;1H";
-    exit(0);
+    std::cout << "-----[GameOfLife]\n";
+    std::cout // please excuse my formatter
+        << "\n  This is a simulation of Conway's Game Of Life implemented by "
+           "Ankush "
+           "Roy.... by following a tutorial from youtube.\n  But! the youtuber "
+           "made it using python and pygame, and I made it using C++ and "
+           "SDL2! and moreover I also added some different features to the "
+           "game!\n\n\n";
+
+    std::cout
+        << "  Press [1] and [ENTER] to Continue\n  Or Press [0] and [ENTER] "
+           "to quit(safely)\n  > ";
+    std::cin >> i;
+
+    if (i == 0) {
+      std::cout << "\033[2J\033[1;1H";
+      exit(0);
+    }
+
+    std::cout << "\033[2J\033[1;1H";
+    std::cout << "-----[CONTROLS]\n\n";
+    std::cout
+        << "  Lets talk about the controls as you "
+           "won't know them if you didn't read it and no where else is the "
+           "controls mentioned except the source code\n\n";
+    std::cout << "      [q]                -> Quit the Simulation\n";
+    std::cout << "      [Enter]            -> Run the Simulation\n";
+    std::cout << "      [SpaceBar]         -> Pause the Simulation\n";
+    std::cout << "      [r]                -> Render fill the Simulation { Can "
+                 "only be done if "
+                 "paused!! }\n";
+    std::cout << "      [c]                -> Clear the Simulation { Can only "
+                 "done if paused !! }\n";
+    std::cout << "      [MouseLeftClick]   -> Toggle the cell nearest to mouse "
+                 "in the "
+                 "Simulation\n";
+    std::cout << "\n      { Unfortunately dragging doesn't work} \n\n";
+
+    std::cout
+        << "  Press [1] and [ENTER] to Continue\n  Or Press [0] and [ENTER] "
+           "to quit(safely)\n  > ";
+
+    std::cin >> i;
+
+    if (i == 0) {
+      std::cout << "\033[2J\033[1;1H";
+      exit(0);
+    }
   }
 
-  std::cout << "\033[2J\033[1;1H";
-  std::cout << "-----[CONTROLS]\n\n";
-  std::cout << "  Lets talk about the controls as you "
-               "won't know them if you didn't read it and no where else is the "
-               "controls mentioned except the source code\n\n";
-  std::cout << "      [q]                -> Quit the Simulation\n";
-  std::cout << "      [Enter]            -> Run the Simulation\n";
-  std::cout << "      [SpaceBar]         -> Pause the Simulation\n";
-  std::cout << "      [r]                -> Render fill the Simulation { Can "
-               "only be done if "
-               "paused!! }\n";
-  std::cout << "      [c]                -> Clear the Simulation { Can only "
-               "done if paused !! }\n";
-  std::cout
-      << "      [MouseLeftClick]   -> Toggle the cell nearest to mouse in the "
-         "Simulation\n";
-  std::cout << "\n      { Unfortunately dragging doesn't work} \n\n";
-
-  std::cout
-      << "  Press [1] and [ENTER] to Continue\n  Or Press [0] and [ENTER] "
-         "to quit(safely)\n  > ";
-
-  std::cin >> i;
-
-  if (i == 0) {
-    std::cout << "\033[2J\033[1;1H";
-    exit(0);
-  }
-
+  // the logic starts here
   srand(time(NULL));
   const int CELL_SIZE = 20;
   const int WINDOW_HEIGHT = 700;
@@ -120,6 +128,13 @@ int main() {
         }
         if (event.button.button == SDL_BUTTON_MIDDLE) {
           // todo
+          std::cout << "Just Pressed! \n";
+        }
+      }
+      if (event.type == SDL_MOUSEBUTTONUP) {
+        if (event.button.button == SDL_BUTTON_MIDDLE) {
+          // todo
+          std::cout << "Just Released! \n";
         }
       }
 
@@ -179,6 +194,37 @@ int main() {
   SDL_DestroyWindow(window);
   SDL_Quit();
 
+  simulation.saveCells("data/vec.txt");
+
   std::cout << "\033[2J\033[1;1H";
   return 0;
+}
+
+bool checkLineContent(const std::string &filename, int lineNumber,
+                      const std::string &targetString) {
+  std::ifstream file(filename);
+  std::string line;
+  int currentLine = 0;
+
+  if (!file.is_open()) {
+    std::ofstream writeFile(filename, std::ios::app);
+    if (writeFile.is_open()) {
+      writeFile << "Line 1\n"; // Write a placeholder for the first line
+      writeFile << "true\n";   // Write "true" on the second line
+      writeFile.close();
+    }
+    return false; // Return false if unable to open the file
+  }
+
+  while (std::getline(file, line)) {
+    currentLine++;
+    if (currentLine == lineNumber) {
+      return line ==
+             targetString; // Compare the line content with the target string
+    }
+  }
+
+  file.close();
+  return false; // Return false if the line number exceeds the total lines in
+                // the file
 }

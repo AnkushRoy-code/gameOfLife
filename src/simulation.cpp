@@ -79,3 +79,7 @@ void Simulation::ToggleCell(int row, int column) {
     grid.ToggleCell(row, column);
   }
 }
+
+void Simulation::saveCells(const std::string &filename) {
+  grid.saveCall(filename);
+}
