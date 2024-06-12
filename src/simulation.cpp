@@ -3,7 +3,7 @@
 #include <utility>
 #include <vector>
 
-void Simulation::Draw(SDL_Renderer *renderer, int offsetX, int offsetY) {
+void Simulation::Draw(SDL_Renderer *renderer, float offsetX, float offsetY) {
   grid.Draw(renderer, offsetX, offsetY);
 }
 

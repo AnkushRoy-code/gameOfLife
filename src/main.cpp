@@ -69,9 +69,9 @@ int main() {
 
   // the logic starts here
   srand(time(NULL));
-  const int CELL_SIZE = 20;
-  const int WINDOW_HEIGHT = 700;
-  const int WINDOW_WIDTH = 700;
+  const int CELL_SIZE = 5; // CELL_SIZE % 10 == 0, != 0, >= 10;
+  const int WINDOW_HEIGHT = 1000;
+  const int WINDOW_WIDTH = 1000;
 
   SDL_Window *window;
   SDL_Renderer *renderer;
@@ -111,6 +111,7 @@ int main() {
 
   Simulation simulation(WINDOW_WIDTH, WINDOW_HEIGHT, CELL_SIZE);
 
+  float offsetX = 0.0f, offsetY = 0.0f;
   while (!quit) {
     frameStart = SDL_GetTicks();
 
@@ -122,8 +123,9 @@ int main() {
 
       else if (event.type == SDL_MOUSEBUTTONDOWN) {
         if (event.button.button == SDL_BUTTON_LEFT) {
-          int row = event.button.y / CELL_SIZE;
-          int column = event.button.x / CELL_SIZE;
+          int row = (event.button.y - offsetY) / CELL_SIZE;
+          int column = (event.button.x - offsetX) / CELL_SIZE;
+
           simulation.ToggleCell(row, column);
         }
         if (event.button.button == SDL_BUTTON_MIDDLE) {
@@ -176,8 +178,6 @@ int main() {
 
     // SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     // SDL_RenderClear(renderer);
-
-    int offsetX = 0, offsetY = 0;
 
     simulation.Draw(renderer, offsetX, offsetY);
     // rendering stuff

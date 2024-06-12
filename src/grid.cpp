@@ -20,7 +20,7 @@ Color lightGray = {55, 55, 55, 255};
 Color white = {255, 255, 255, 255};
 Color black = {0, 0, 0, 255};
 
-void Grid::Draw(SDL_Renderer *renderer, int offsetX, int offsetY) {
+void Grid::Draw(SDL_Renderer *renderer, float offsetX, float offsetY) {
   for (int row = 0; row < rows; row++) {
     for (int column = 0; column < columns; column++) {
       SDL_Rect rect; // Define rectangle for the cell
