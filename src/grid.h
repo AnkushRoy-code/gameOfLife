@@ -21,6 +21,8 @@ public:
   void FillRandom();
   void Clear();
   void ToggleCell(int row, int column);
+  void killCell(int row, int column);
+  void reviveCell(int row, int column);
 
   void saveCall(const std::string &filename) {
     saveCellsToFile(cells, filename);

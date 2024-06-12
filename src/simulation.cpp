@@ -80,6 +80,18 @@ void Simulation::ToggleCell(int row, int column) {
   }
 }
 
+void Simulation::killCell(int row, int column) {
+  if (!isRunning()) {
+    grid.killCell(row, column);
+  }
+}
+
+void Simulation::reviveCell(int row, int column) {
+  if (!isRunning()) {
+    grid.reviveCell(row, column);
+  }
+}
+
 void Simulation::saveCells(const std::string &filename) {
   grid.saveCall(filename);
 }

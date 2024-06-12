@@ -21,8 +21,12 @@ public:
   void ClearGrid();
   void CreateRandomState();
   void ToggleCell(int row, int column);
+  void killCell(int row, int column);
+  void reviveCell(int row, int column);
 
   void saveCells(const std::string &filename);
+
+  int getValue(int row, int column) { return grid.GetValue(row, column); }
 
 private:
   Grid grid;

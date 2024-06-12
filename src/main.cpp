@@ -69,9 +69,9 @@ int main() {
 
   // the logic starts here
   srand(time(NULL));
-  const int CELL_SIZE = 5; // CELL_SIZE % 10 == 0, != 0, >= 10;
-  const int WINDOW_HEIGHT = 1000;
-  const int WINDOW_WIDTH = 1000;
+  const int CELL_SIZE = 20;
+  const int WINDOW_HEIGHT = 700;
+  const int WINDOW_WIDTH = 700;
 
   SDL_Window *window;
   SDL_Renderer *renderer;
@@ -112,6 +112,14 @@ int main() {
   Simulation simulation(WINDOW_WIDTH, WINDOW_HEIGHT, CELL_SIZE);
 
   float offsetX = 0.0f, offsetY = 0.0f;
+  float offsetEndX = 0.0f, offsetEndY = 0.0f;
+
+  bool leftMouseButtonPressed = false;
+  bool middleMouseButtonPressed = false;
+  bool alive;
+
+  float mouseStartPanX = 0.0f, mouseStartPanY = 0.0f;
+
   while (!quit) {
     frameStart = SDL_GetTicks();
 
@@ -123,20 +131,36 @@ int main() {
 
       else if (event.type == SDL_MOUSEBUTTONDOWN) {
         if (event.button.button == SDL_BUTTON_LEFT) {
-          int row = (event.button.y - offsetY) / CELL_SIZE;
-          int column = (event.button.x - offsetX) / CELL_SIZE;
+          leftMouseButtonPressed = true;
+          int x, y;
+          SDL_GetMouseState(&x, &y); // Get current mouse position
 
-          simulation.ToggleCell(row, column);
+          int row = (y - offsetY) / CELL_SIZE;
+          int column = (x - offsetX) / CELL_SIZE;
+
+          if (simulation.getValue(row, column) == 0) {
+            alive = true;
+          } else {
+            alive = false;
+          }
         }
         if (event.button.button == SDL_BUTTON_MIDDLE) {
-          // todo
-          std::cout << "Just Pressed! \n";
+          middleMouseButtonPressed = true;
+          int x, y;
+          SDL_GetMouseState(&x, &y); // Get current mouse position
+
+          mouseStartPanX = x;
+          mouseStartPanY = y;
         }
       }
       if (event.type == SDL_MOUSEBUTTONUP) {
         if (event.button.button == SDL_BUTTON_MIDDLE) {
-          // todo
-          std::cout << "Just Released! \n";
+          middleMouseButtonPressed = false;
+          offsetEndX = offsetX;
+          offsetEndY = offsetY;
+        }
+        if (event.button.button == SDL_BUTTON_LEFT) {
+          leftMouseButtonPressed = false;
         }
       }
 
@@ -164,6 +188,14 @@ int main() {
 
         case SDLK_c:
           simulation.ClearGrid();
+          break;
+
+        case SDLK_m:
+          offsetY = 0.0f;
+          offsetX = 0.0f;
+          offsetEndY = 0.0f;
+          offsetEndX = 0.0f;
+          break;
 
         default:
           break;
@@ -171,6 +203,27 @@ int main() {
       }
     }
 
+    if (leftMouseButtonPressed) {
+      int x, y;
+      SDL_GetMouseState(&x, &y); // Get current mouse position
+
+      int row = (y - offsetY) / CELL_SIZE;
+      int column = (x - offsetX) / CELL_SIZE;
+
+      if (alive) {
+        simulation.reviveCell(row, column);
+      } else if (!alive) {
+        simulation.killCell(row, column);
+      }
+    }
+
+    if (middleMouseButtonPressed) {
+      int x, y;
+      SDL_GetMouseState(&x, &y); // Get current mouse position
+
+      offsetY = offsetEndY + (y - mouseStartPanY);
+      offsetX = offsetEndX + (x - mouseStartPanX);
+    }
     simulation.Update();
 
     SDL_SetRenderDrawColor(renderer, 29, 29, 29, 255);

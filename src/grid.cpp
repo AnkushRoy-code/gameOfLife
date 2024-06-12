@@ -76,6 +76,18 @@ void Grid::ToggleCell(int row, int column) {
   }
 }
 
+void Grid::killCell(int row, int column) {
+  if (row >= 0 && row < rows && column >= 0 && column < columns) {
+    cells[row][column] = 0;
+  }
+}
+
+void Grid::reviveCell(int row, int column) {
+  if (row >= 0 && row < rows && column >= 0 && column < columns) {
+    cells[row][column] = 1;
+  }
+}
+
 void Grid::saveCellsToFile(const std::vector<std::vector<int>> &cells,
                            const std::string &filename) {
   std::ofstream outputFile(filename);
