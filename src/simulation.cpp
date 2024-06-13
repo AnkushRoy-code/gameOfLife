@@ -3,8 +3,9 @@
 #include <utility>
 #include <vector>
 
-void Simulation::Draw(SDL_Renderer *renderer, float offsetX, float offsetY) {
-  grid.Draw(renderer, offsetX, offsetY);
+void Simulation::Draw(SDL_Renderer *renderer, float offsetX, float offsetY,
+                      float scale) {
+  grid.Draw(renderer, offsetX, offsetY, scale);
 }
 
 void Simulation::SetCellValue(int row, int column, int value) {

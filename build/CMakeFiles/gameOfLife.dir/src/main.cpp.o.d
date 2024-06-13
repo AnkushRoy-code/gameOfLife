@@ -178,7 +178,8 @@ CMakeFiles/gameOfLife.dir/src/main.cpp.o: \
  /usr/include/SDL2/SDL_render.h /usr/include/SDL2/SDL_shape.h \
  /usr/include/SDL2/SDL_system.h /usr/include/SDL2/SDL_timer.h \
  /usr/include/SDL2/SDL_version.h /usr/include/SDL2/SDL_locale.h \
- /usr/include/SDL2/SDL_misc.h /usr/include/c++/14.1.1/fstream \
+ /usr/include/SDL2/SDL_misc.h /usr/include/SDL2/SDL_events.h \
+ /usr/include/SDL2/SDL_keycode.h /usr/include/c++/14.1.1/fstream \
  /usr/include/c++/14.1.1/istream /usr/include/c++/14.1.1/ios \
  /usr/include/c++/14.1.1/iosfwd /usr/include/c++/14.1.1/bits/stringfwd.h \
  /usr/include/c++/14.1.1/bits/memoryfwd.h \

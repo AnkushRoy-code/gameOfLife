@@ -20,16 +20,18 @@ Color lightGray = {55, 55, 55, 255};
 Color white = {255, 255, 255, 255};
 Color black = {0, 0, 0, 255};
 
-void Grid::Draw(SDL_Renderer *renderer, float offsetX, float offsetY) {
+void Grid::Draw(SDL_Renderer *renderer, float offsetX, float offsetY,
+                float scale) {
   for (int row = 0; row < rows; row++) {
     for (int column = 0; column < columns; column++) {
       SDL_Rect rect; // Define rectangle for the cell
 
-      rect.x =
-          column * cellSize + offsetX;   // Set x based on column and cell size
-      rect.y = row * cellSize + offsetY; // Set y based on row and cell size
-      rect.w = cellSize - 1;             // Set width of the cell
-      rect.h = cellSize - 1;             // Set height of the cell
+      rect.x = (column * cellSize + offsetX) *
+               scale; // Set x based on column and cell size
+      rect.y = (row * cellSize + offsetY) *
+               scale;                  // Set y based on row and cell size
+      rect.w = (cellSize - 1) * scale; // Set width of the cell
+      rect.h = (cellSize - 1) * scale; // Set height of the cell
 
       Color color = cells[row][column] ? green : lightGray;
 

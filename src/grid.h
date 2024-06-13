@@ -11,7 +11,7 @@ public:
     initializeCells();
   }
 
-  void Draw(SDL_Renderer *renderer, float offsetX, float offsetY);
+  void Draw(SDL_Renderer *renderer, float offsetX, float offsetY, float scale);
   void SetValue(int row, int column, int value);
 
   int GetValue(int row, int column);

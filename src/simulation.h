@@ -8,7 +8,7 @@ public:
   Simulation(int width, int height, int cellSize)
       : grid(width, height, cellSize), tempGrid(width, height, cellSize),
         run{false} {};
-  void Draw(SDL_Renderer *renderer, float offsetX, float offsetY);
+  void Draw(SDL_Renderer *renderer, float offsetX, float offsetY, float scale);
   void SetCellValue(int row, int column, int value);
 
   int CountLiveNeighbors(int row, int column);

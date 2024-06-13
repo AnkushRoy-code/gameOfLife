@@ -1,4 +1,6 @@
 #include <SDL2/SDL.h>
+#include <SDL_events.h>
+#include <SDL_keycode.h>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -45,19 +47,19 @@ int main() {
     std::cout << "      [q]                -> Quit the Simulation\n";
     std::cout << "      [Enter]            -> Run the Simulation\n";
     std::cout << "      [SpaceBar]         -> Pause the Simulation\n";
+    std::cout << "      [m]                -> Centering the simulation after "
+                 "panning\n";
     std::cout << "      [r]                -> Render fill the Simulation { Can "
                  "only be done if "
                  "paused!! }\n";
     std::cout << "      [c]                -> Clear the Simulation { Can only "
                  "done if paused !! }\n";
     std::cout << "      [MouseLeftClick]   -> Toggle the cell nearest to mouse "
-                 "in the "
-                 "Simulation\n";
-    std::cout << "\n      { Unfortunately dragging doesn't work} \n\n";
-
-    std::cout
-        << "  Press [1] and [ENTER] to Continue\n  Or Press [0] and [ENTER] "
-           "to quit(safely)\n  > ";
+                 "in the Simulation\n";
+    std::cout << "      [MouseMiddleClick] -> For panning the simulation\n";
+    std::cout << "  \n\nPress [1] and [ENTER] to Continue\n  Or Press [0] and "
+                 "[ENTER] "
+                 "to quit(safely)\n  > ";
 
     std::cin >> i;
 
@@ -114,6 +116,8 @@ int main() {
   float offsetX = 0.0f, offsetY = 0.0f;
   float offsetEndX = 0.0f, offsetEndY = 0.0f;
 
+  float scale = 1.0f;
+
   bool leftMouseButtonPressed = false;
   bool middleMouseButtonPressed = false;
   bool alive;
@@ -135,32 +139,38 @@ int main() {
           int x, y;
           SDL_GetMouseState(&x, &y); // Get current mouse position
 
-          int row = (y - offsetY) / CELL_SIZE;
-          int column = (x - offsetX) / CELL_SIZE;
+          int row = ((y / scale) - offsetY) / CELL_SIZE;
+          int column = ((x / scale) - offsetX) / CELL_SIZE;
 
           if (simulation.getValue(row, column) == 0) {
             alive = true;
           } else {
             alive = false;
           }
-        }
-        if (event.button.button == SDL_BUTTON_MIDDLE) {
+        } else if (event.button.button == SDL_BUTTON_MIDDLE) {
           middleMouseButtonPressed = true;
           int x, y;
           SDL_GetMouseState(&x, &y); // Get current mouse position
 
-          mouseStartPanX = x;
-          mouseStartPanY = y;
+          mouseStartPanX = x / scale;
+          mouseStartPanY = y / scale;
         }
-      }
-      if (event.type == SDL_MOUSEBUTTONUP) {
+      } else if (event.type == SDL_MOUSEBUTTONUP) {
         if (event.button.button == SDL_BUTTON_MIDDLE) {
           middleMouseButtonPressed = false;
           offsetEndX = offsetX;
           offsetEndY = offsetY;
-        }
-        if (event.button.button == SDL_BUTTON_LEFT) {
+        } else if (event.button.button == SDL_BUTTON_LEFT) {
           leftMouseButtonPressed = false;
+        }
+      }
+
+      else if (event.type == SDL_MOUSEWHEEL) {
+        if (event.wheel.y > 0) {
+          scale *= 1.05f;
+
+        } else if (event.wheel.y < 0) {
+          scale *= 0.95f;
         }
       }
 
@@ -196,6 +206,9 @@ int main() {
           offsetEndY = 0.0f;
           offsetEndX = 0.0f;
           break;
+        case SDLK_z:
+          scale = 1.0f;
+          break;
 
         default:
           break;
@@ -207,8 +220,8 @@ int main() {
       int x, y;
       SDL_GetMouseState(&x, &y); // Get current mouse position
 
-      int row = (y - offsetY) / CELL_SIZE;
-      int column = (x - offsetX) / CELL_SIZE;
+      int row = ((y / scale) - offsetY) / CELL_SIZE;
+      int column = ((x / scale) - offsetX) / CELL_SIZE;
 
       if (alive) {
         simulation.reviveCell(row, column);
@@ -221,8 +234,8 @@ int main() {
       int x, y;
       SDL_GetMouseState(&x, &y); // Get current mouse position
 
-      offsetY = offsetEndY + (y - mouseStartPanY);
-      offsetX = offsetEndX + (x - mouseStartPanX);
+      offsetY = offsetEndY + ((y / scale) - mouseStartPanY);
+      offsetX = offsetEndX + ((x / scale) - mouseStartPanX);
     }
     simulation.Update();
 
@@ -232,7 +245,7 @@ int main() {
     // SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     // SDL_RenderClear(renderer);
 
-    simulation.Draw(renderer, offsetX, offsetY);
+    simulation.Draw(renderer, offsetX, offsetY, scale);
     // rendering stuff
     SDL_RenderPresent(renderer);
 
