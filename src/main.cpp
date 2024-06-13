@@ -1,6 +1,4 @@
 #include <SDL2/SDL.h>
-#include <SDL_events.h>
-#include <SDL_keycode.h>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -8,25 +6,35 @@
 
 #include "simulation.h"
 
+// The simulation is capped at 12FPS so that one can see the simulation more
+// properly
 const int DESIRED_FPS = 12;
 const int FRAME_PERIOD = 1000 / DESIRED_FPS;
 
+// This function just checks if the contents of xth line of a file is equal to
+// the string. This was made so that the programme can know if it is the first
+// time of the person running the simulation and show the dialogues accordingly
 bool checkLineContent(const std::string &filename, int lineNumber,
                       const std::string &targetString);
 
 int main() {
+  // I should've made it a different function for cleanliness......but who cares
   if (!checkLineContent("data/NotFirstTime.txt", 2, "true")) {
     int i = 0;
 
-    std::cout << "\033[2J\033[1;1H";
+    std::cout << "\033[2J\033[1;1H"; // This is a special thingy that cleares
+                                     // the terminal screen. It mightnot work
+                                     // with mac and windows.
     std::cout << "-----[GameOfLife]\n";
-    std::cout // please excuse my formatter
+    std::cout // Please excuse my formatter IDK how to configure it
         << "\n  This is a simulation of Conway's Game Of Life implemented by "
-           "Ankush "
-           "Roy.... by following a tutorial from youtube.\n  But! the youtuber "
-           "made it using python and pygame, and I made it using C++ and "
-           "SDL2! and moreover I also added some different features to the "
-           "game!\n\n\n";
+           "Ankush Roy a 16y old but...... by following a tutorial from "
+           "youtube from an amazing youtuber: Programming With Nick.\n  But! "
+           "the Nick"
+           "made it using python and pygame, he also had a C++ with raylib "
+           "video but I was dumb enough to know that later, I made it using "
+           "C++ and SDL2! and moreover I also added some different features to "
+           "the game!\n\n\n";
 
     std::cout
         << "  Press [1] and [ENTER] to Continue\n  Or Press [0] and [ENTER] "
@@ -49,14 +57,18 @@ int main() {
     std::cout << "      [SpaceBar]         -> Pause the Simulation\n";
     std::cout << "      [m]                -> Centering the simulation after "
                  "panning\n";
+    std::cout
+        << "      [z]                -> Resetting the zoom of the simulation\n";
     std::cout << "      [r]                -> Render fill the Simulation { Can "
                  "only be done if "
                  "paused!! }\n";
     std::cout << "      [c]                -> Clear the Simulation { Can only "
                  "done if paused !! }\n";
-    std::cout << "      [MouseLeftClick]   -> Toggle the cell nearest to mouse "
+    std::cout << "      [MouseLeftHold]    -> Toggle the cell nearest to mouse "
                  "in the Simulation\n";
-    std::cout << "      [MouseMiddleClick] -> For panning the simulation\n";
+    std::cout << "      [MouseMiddleHold] -> For panning the simulation\n";
+    std::cout
+        << "      [MouseScroll]     -> For zooming in and out the simulation\n";
     std::cout << "  \n\nPress [1] and [ENTER] to Continue\n  Or Press [0] and "
                  "[ENTER] "
                  "to quit(safely)\n  > ";
@@ -113,16 +125,18 @@ int main() {
 
   Simulation simulation(WINDOW_WIDTH, WINDOW_HEIGHT, CELL_SIZE);
 
+  // These are for panning
   float offsetX = 0.0f, offsetY = 0.0f;
   float offsetEndX = 0.0f, offsetEndY = 0.0f;
+  float mouseStartPanX = 0.0f, mouseStartPanY = 0.0f;
 
+  // This for zooming
   float scale = 1.0f;
 
+  // These for dragging and reviving/killing the cells
   bool leftMouseButtonPressed = false;
   bool middleMouseButtonPressed = false;
   bool alive;
-
-  float mouseStartPanX = 0.0f, mouseStartPanY = 0.0f;
 
   while (!quit) {
     frameStart = SDL_GetTicks();
@@ -133,13 +147,19 @@ int main() {
         quit = true;
       }
 
-      else if (event.type == SDL_MOUSEBUTTONDOWN) {
+      else if (event.type ==
+               SDL_MOUSEBUTTONDOWN) { // Starting a function by making it's
+                                      // variable true and setting initial data
+        // This for Toggling cell life.
         if (event.button.button == SDL_BUTTON_LEFT) {
           leftMouseButtonPressed = true;
           int x, y;
-          SDL_GetMouseState(&x, &y); // Get current mouse position
+          SDL_GetMouseState(&x, &y); // For getting position not state.
 
-          int row = ((y / scale) - offsetY) / CELL_SIZE;
+          int row =
+              ((y / scale) - offsetY) /
+              CELL_SIZE; // A formulae I made to calculate the current hovering
+                         // cell. Used common sense and no complex maths.
           int column = ((x / scale) - offsetX) / CELL_SIZE;
 
           if (simulation.getValue(row, column) == 0) {
@@ -147,24 +167,29 @@ int main() {
           } else {
             alive = false;
           }
-        } else if (event.button.button == SDL_BUTTON_MIDDLE) {
+        } else if (event.button.button ==
+                   SDL_BUTTON_MIDDLE) { // This for panning
           middleMouseButtonPressed = true;
           int x, y;
-          SDL_GetMouseState(&x, &y); // Get current mouse position
+          SDL_GetMouseState(&x, &y);
 
           mouseStartPanX = x / scale;
           mouseStartPanY = y / scale;
         }
-      } else if (event.type == SDL_MOUSEBUTTONUP) {
+      } else if (event.type ==
+                 SDL_MOUSEBUTTONUP) { // Finishing the function by making it's
+                                      // variable false and saving some data.
+        // For panning
         if (event.button.button == SDL_BUTTON_MIDDLE) {
           middleMouseButtonPressed = false;
-          offsetEndX = offsetX;
+          offsetEndX = offsetX; // Saving these for proper panning
           offsetEndY = offsetY;
-        } else if (event.button.button == SDL_BUTTON_LEFT) {
+        } else if (event.button.button == SDL_BUTTON_LEFT) { // For Togging
           leftMouseButtonPressed = false;
         }
       }
 
+      // This for zooming
       else if (event.type == SDL_MOUSEWHEEL) {
         if (event.wheel.y > 0) {
           scale *= 1.05f;
@@ -174,6 +199,8 @@ int main() {
         }
       }
 
+      // This for some other functions that run only once i.e no dragging and
+      // stuff
       else if (event.type == SDL_KEYDOWN) {
 
         switch (event.key.keysym.sym) {
@@ -216,9 +243,10 @@ int main() {
       }
     }
 
+    // Toggle Life
     if (leftMouseButtonPressed) {
       int x, y;
-      SDL_GetMouseState(&x, &y); // Get current mouse position
+      SDL_GetMouseState(&x, &y);
 
       int row = ((y / scale) - offsetY) / CELL_SIZE;
       int column = ((x / scale) - offsetX) / CELL_SIZE;
@@ -230,6 +258,7 @@ int main() {
       }
     }
 
+    // Panning
     if (middleMouseButtonPressed) {
       int x, y;
       SDL_GetMouseState(&x, &y); // Get current mouse position
@@ -237,6 +266,7 @@ int main() {
       offsetY = offsetEndY + ((y / scale) - mouseStartPanY);
       offsetX = offsetEndX + ((x / scale) - mouseStartPanX);
     }
+
     simulation.Update();
 
     SDL_SetRenderDrawColor(renderer, 29, 29, 29, 255);
@@ -275,7 +305,8 @@ bool checkLineContent(const std::string &filename, int lineNumber,
   if (!file.is_open()) {
     std::ofstream writeFile(filename, std::ios::app);
     if (writeFile.is_open()) {
-      writeFile << "Line 1\n"; // Write a placeholder for the first line
+      writeFile << "Line 1\n"; // Not needed just because I was learning file io
+                               // and decided to keep it
       writeFile << "true\n";   // Write "true" on the second line
       writeFile.close();
     }
@@ -285,8 +316,7 @@ bool checkLineContent(const std::string &filename, int lineNumber,
   while (std::getline(file, line)) {
     currentLine++;
     if (currentLine == lineNumber) {
-      return line ==
-             targetString; // Compare the line content with the target string
+      return line == targetString;
     }
   }
 

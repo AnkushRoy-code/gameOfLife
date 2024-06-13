@@ -15,6 +15,7 @@ struct Color {
   Uint8 a;
 };
 
+// Add more colors if needed
 Color green = {0, 255, 0, 255};
 Color lightGray = {55, 55, 55, 255};
 Color white = {255, 255, 255, 255};
@@ -24,14 +25,13 @@ void Grid::Draw(SDL_Renderer *renderer, float offsetX, float offsetY,
                 float scale) {
   for (int row = 0; row < rows; row++) {
     for (int column = 0; column < columns; column++) {
-      SDL_Rect rect; // Define rectangle for the cell
+      SDL_Rect rect;
 
-      rect.x = (column * cellSize + offsetX) *
-               scale; // Set x based on column and cell size
-      rect.y = (row * cellSize + offsetY) *
-               scale;                  // Set y based on row and cell size
-      rect.w = (cellSize - 1) * scale; // Set width of the cell
-      rect.h = (cellSize - 1) * scale; // Set height of the cell
+      // I changed this logic so the panning and scaling works.
+      rect.x = (column * cellSize + offsetX) * scale;
+      rect.y = (row * cellSize + offsetY) * scale;
+      rect.w = (cellSize - 1) * scale;
+      rect.h = (cellSize - 1) * scale;
 
       Color color = cells[row][column] ? green : lightGray;
 
@@ -90,6 +90,7 @@ void Grid::reviveCell(int row, int column) {
   }
 }
 
+// Function to save the last simulation in a file
 void Grid::saveCellsToFile(const std::vector<std::vector<int>> &cells,
                            const std::string &filename) {
   std::ofstream outputFile(filename);
@@ -102,16 +103,17 @@ void Grid::saveCellsToFile(const std::vector<std::vector<int>> &cells,
   for (const auto &row : cells) {
     for (size_t i = 0; i < row.size(); ++i) {
       outputFile << row[i];
-      if (i != row.size() - 1) { // Don't add a space after the last element
-        outputFile << " ";       // Space separates integers within a row
+      if (i != row.size() - 1) {
+        outputFile << " ";
       }
     }
-    outputFile << "\n"; // Newline separates rows
+    outputFile << "\n";
   }
 
   outputFile.close();
 }
 
+// To load cells from the file
 std::vector<std::vector<int>>
 Grid::loadCellsFromFile(const std::string &filename) {
   std::vector<std::vector<int>> cells;

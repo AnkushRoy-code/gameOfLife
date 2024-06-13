@@ -20,7 +20,7 @@ public:
 
   void ClearGrid();
   void CreateRandomState();
-  void ToggleCell(int row, int column);
+  void ToggleCell(int row, int column); // Not used anywhere in the main code
   void killCell(int row, int column);
   void reviveCell(int row, int column);
 
