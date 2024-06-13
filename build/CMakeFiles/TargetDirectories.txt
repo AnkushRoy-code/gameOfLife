@@ -1,3 +1,0 @@
-/home/ankush/Coding/C++/SDL2/gameOfLife/build/CMakeFiles/gameOfLife.dir
-/home/ankush/Coding/C++/SDL2/gameOfLife/build/CMakeFiles/edit_cache.dir
-/home/ankush/Coding/C++/SDL2/gameOfLife/build/CMakeFiles/rebuild_cache.dir
