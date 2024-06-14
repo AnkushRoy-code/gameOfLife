@@ -66,9 +66,9 @@ int main() {
                  "done if paused !! }\n";
     std::cout << "      [MouseLeftHold]    -> Toggle the cell nearest to mouse "
                  "in the Simulation\n";
-    std::cout << "      [MouseMiddleHold] -> For panning the simulation\n";
-    std::cout
-        << "      [MouseScroll]     -> For zooming in and out the simulation\n";
+    std::cout << "      [MouseMiddleHold]  -> For panning the simulation\n";
+    std::cout << "      [MouseScroll]      -> For zooming in and out the "
+                 "simulation\n";
     std::cout << "  \n\nPress [1] and [ENTER] to Continue\n  Or Press [0] and "
                  "[ENTER] "
                  "to quit(safely)\n  > ";
